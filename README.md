@@ -26,11 +26,11 @@
 - ☑️ С помощью Yandex Data Transfer загружаются обработанные данные из Yandex Object Storage в Yandex Managed Service for Clickhouse
 
 ## Схема решения
-<img width="786" alt="image" src="">
+<img width="786" alt="image" src="https://github.com/yandex-cloud-examples/yc-data-transfer-from-yandex-direct-to-clickhouse/blob/main/architecture.jpg">
 
 
 ## Установка решения с помощью Terraform 
-### Шаги
+### Шаги 0, 1, 2, 3, 4, 7-11 выполняются вручную
 
 0. Настройте аккаунт в яндекс директе и подготовьте токен, а также данные для выгрузки (можно через песочницу)
    
@@ -46,16 +46,19 @@
 
 6. Выполните `$ terraform apply` и подождите, пока произойдет поднятие сервисов (если возникают ошибки - смотрите логи)
 
-7. Запустите выполнение Cloud Function 
+7. Запустите выполнение Cloud Function (через тестирование - запустить тест). В object storage появится файл в формате parquet из полученного из Yandex Direct JSON
 8. Cоздайте эндпоинт в Data Transfer для object storage:
+Bucket = возьмите из созданного object storage
+AWS_KEYS = возьмите из Lockbox
 endpoint = https://storage.yandexcloud.net
 zone = ru-central1
 схема: {"Id": "int64", "Name": "string"}
+таблица = возьмите название из созданного parquet файла (например, 6a1eed08da13444886d705231c213ced.snappy.parquet)
 
 результирующая схема:
 Id: Int64
 Name: String
 
-9. Создайте Data Transfer с использованием двух новых эндпоинтов
-10. Запустите Data Transfer
-11. Проверьте данные в Clickhouse  
+9. Создайте Data Transfer с использованием двух новых эндпоинтов (источник object storage, приемник clickhouse) - остальные настройки по умолчанию
+10.  Запустите Data Transfer (активировать)
+11.  Проверьте наличие новых данных в Clickhouse  (https://cloud.yandex.ru/docs/managed-clickhouse/operations/connect)
